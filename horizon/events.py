@@ -1,8 +1,17 @@
 from dataclasses import dataclass, field
 from typing import Any, Union
 
-from .util import as_timedelta, PropagatingThread, ThreadError
+from .util import as_timedelta, EventThread, ThreadError
 from .enumerators import EventType
+
+
+@dataclass
+class EventData():
+    event_id: int=-1
+    start: int=0
+    end: int=0
+    result: Any=None
+    data: Any=None
 
 
 @dataclass
@@ -16,6 +25,7 @@ class Event():
     after_delay: Any=0
     duration: Any=0
     action: Any=None
+    data: EventData=field(default_factory=lambda:EventData())
 
 
     def __post_init__(self):
@@ -38,10 +48,10 @@ class Event():
         thread_name = '{name} Thread'.format(name=self.name)
 
         if hasattr(self.action, '__call__'):
-            self._thread = PropagatingThread(target=self.action, name=thread_name)
+            self._thread = EventThread(target=self.action, name=thread_name)
 
         else:
-            self._thread = PropagatingThread(target=lambda t:None, name=thread_name)
+            self._thread = EventThread(target=lambda t:None, name=thread_name)
 
         self._threading_status = 1 # fresh thread set up
 
@@ -77,6 +87,7 @@ class Event():
     
     def trigger(self, time=0):
         if hasattr(self.action, '__call__'):
+            self.data.start = time
             self._thread.args = (time,)
             self._thread.start()
 
@@ -126,5 +137,8 @@ class EndOf(Marker):
             time = self.anchor.time
 
         Marker.__init__(self, name="End of {name}".format(name=self.anchor.name), id=-1, time=time)
+
+
+
 
 

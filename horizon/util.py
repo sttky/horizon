@@ -2,7 +2,6 @@ import re
 from threading import Thread, ThreadError
 from datetime import timedelta
 
-from .events import EventData
 from .enumerators import EventThreadStatus
 
 TIME_UNITS_FACTOR = dict(s=1, m=60, h=3600)
@@ -50,7 +49,7 @@ def as_timedelta(*arg, **kwargs):
 
 class EventThread(Thread):
     exception = None
-    data = EventData()
+    data = None
     state = EventThreadStatus.New # not started
 
     def run(self):
