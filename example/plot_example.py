@@ -8,6 +8,8 @@ colors = ['C0','C1','C2','C3','C4','C5']
 from horizon import *
 from horizon.util import as_timedelta
 
+print(Event)
+
 event1 = Event(action=lambda t: print('Event 1 triggered at {}'.format(t)), duration=5, after_delay=0.5)
 event2 = Event(action=lambda t: print('Event 2 triggered at {}'.format(t)), before_delay=1, before=EndOf(event1), duration=2)
 event3 = Event(action=lambda t: print('Event 3 triggered at {}'.format(t)), before_delay=1, before=EndOf(event2), duration=2)
